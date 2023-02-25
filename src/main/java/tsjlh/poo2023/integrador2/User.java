@@ -81,7 +81,7 @@ public class User {
     System.out.print("Ingrese el código: ");
     id = scanner.nextLine();
 
-    System.out.print("Ingrese el role: ");
+    System.out.print("Ingrese el rol: ");
     role = scanner.nextLine();
   }
 }
