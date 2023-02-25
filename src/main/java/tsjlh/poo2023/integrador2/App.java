@@ -2,13 +2,28 @@ package tsjlh.poo2023.integrador2;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 public class App {
+  /*
+   * Scanner usado en toda la aplicación para pedir información al usuario.
+   */
   Scanner scanner;
 
+  /*
+   * Arreglo que contiene todos los usuarios del sistema.
+   */
   ArrayList<User> users;
+
+  /*
+   * Arreglo que contiene todos los materiales del sistema.
+   */
   // ArrayList<Item> items;
 
+  /*
+   * Para mostrar información encima de los menús. Sirve para errores, avisos e
+   * información obtenida.
+   */
   String flash;
 
   public App() {
@@ -63,6 +78,7 @@ public class App {
 
   public void queryEntryMenu() {
     int opt = 0, optUser = 0;
+    final String optUserQuery[] = new String[1];
 
     do {
       clearScreen();
@@ -95,9 +111,9 @@ public class App {
           do {
             clearScreen();
 
-            users.forEach((user) -> {
-              System.out.println(users.indexOf(user) + ". " + user.getName());
-            });
+            for (int i = 0; i < users.size(); i++) {
+              System.out.println(i + ". " + users.get(i).getName());
+            }
 
             System.out.print("Indique el usuario del que quiere ver información: ");
             try {
@@ -106,11 +122,40 @@ public class App {
               continue;
             }
 
-            // FIXME: Esta parte no funciona aunque la opción rebase el límite.
             if (optUser >= 0 && optUser <= users.size()) {
               this.flash = users.get(optUser).toString();
             }
           } while (optUser < 0 || optUser > users.size());
+        }
+
+        case 2 -> {
+          clearScreen();
+
+          optUserQuery[0] = "";
+
+          System.out.print("Ingrese el nombre o código del usuario: ");
+          try {
+            optUserQuery[0] = scanner.nextLine();
+          } catch (Exception exception) {
+            continue;
+          }
+
+          if (optUserQuery[0] == "") {
+            this.flash = "error: Necesita ingresar un valor para realizar la búsqueda.";
+            break;
+          }
+
+          Predicate<User> searchByNameOrCode = (user) -> !user.getName().equals(optUserQuery[0])
+              && !user.getId().equals(optUserQuery[0]);
+
+          ArrayList<User> results = new ArrayList<>(users);
+          results.removeIf(searchByNameOrCode);
+
+          if (results.size() > 0) {
+            this.flash = results.get(0).toString();
+          } else {
+            this.flash = "error: Usuario no encontrado.";
+          }
         }
 
         case 7 -> this.flash = "";
