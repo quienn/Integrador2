@@ -66,20 +66,38 @@ public class Item {
 	}
 
 	public void scanAttributes(Scanner scanner) {
-		System.out.print("Nombre: ");
+		String lastName = this.name, lastId = this.id, lastCategory = this.category,
+				lastQuantity = String.valueOf(this.quantity), lastConsumable = this.consumable ? "S" : "N";
+
+		System.out.printf("Nombre (%s): ", this.name);
 		this.name = scanner.nextLine();
+		if (this.name.equals("")) {
+			this.name = lastName;
+		}
 
-		System.out.print("ID: ");
+		System.out.printf("ID (%s): ", this.id);
 		this.id = scanner.nextLine();
+		if (this.id.equals("")) {
+			this.id = lastId;
+		}
 
-		System.out.print("Categoría: ");
+		System.out.printf("Categoría (%s): ", this.category);
 		this.category = scanner.nextLine();
+		if (this.category.equals("")) {
+			this.category = lastCategory;
+		}
 
-		System.out.print("Cantidad: ");
+		System.out.printf("Cantidad (%s): ", this.quantity);
 		this.quantity = Integer.parseInt(scanner.nextLine());
+		if (this.quantity == 0) {
+			this.quantity = Integer.parseInt(lastQuantity);
+		}
 
-		System.out.print("¿Es consumible? (S/N): ");
+		System.out.printf("¿Es consumible? (S/N) [%s]: ", this.consumable ? "S" : "N");
 		this.consumable = scanner.nextLine().equalsIgnoreCase("s");
+		if (!this.consumable) {
+			this.consumable = lastConsumable.equalsIgnoreCase("s");
+		}
 	}
 
 	/*
