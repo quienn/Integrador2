@@ -73,12 +73,12 @@ public class Loan {
 	public void scanAttributes(Scanner scanner,
 			ArrayList<Item> availableItems,
 			ArrayList<User> registeredUsers,
-			String flash) {
+			App app) {
 		String borrowerId = "", lenderId = "", itemId = "", dateAnswer = "";
 
 		for (int i = 0; i < registeredUsers.size(); i++) {
 			System.out.println(
-					i + ". + " + registeredUsers.get(i).getName() + " - " + registeredUsers.get(i).getId());
+					"+ " + registeredUsers.get(i).getName() + " - " + registeredUsers.get(i).getId());
 		}
 
 		System.out.print("Indique su usuario a través de su código o nombre: ");
@@ -91,8 +91,7 @@ public class Loan {
 		}
 
 		if (this.lender == null || !this.lender.getRole().toLowerCase().equals("almacenista")) {
-			System.out.println("No se encontró el usuario prestador o el usuario no es almacenista.");
-			flash = "No se encontró el usuario prestador o el usuario no es almacenista.";
+			app.flash = "error: No se encontró el usuario prestador o el usuario no es almacenista.";
 		} else {
 			System.out.print("Indique el usuario que desea prestar a través de su código o nombre: ");
 			borrowerId = scanner.nextLine();
@@ -104,11 +103,11 @@ public class Loan {
 				}
 			}
 			if (this.borrower == null) {
-				flash = "No se encontró el usuario prestatario.";
+				app.flash = "No se encontró el usuario prestatario.";
 			} else {
 				for (int i = 0; i < availableItems.size(); i++) {
 					System.out.println(
-							i + ". + " + availableItems.get(i).getName() + " - " + availableItems.get(i).getId());
+							"+ " + availableItems.get(i).getName() + " - " + availableItems.get(i).getId());
 				}
 
 				System.out.print("Indique el material que desea prestar a través de su código o nombre: ");
@@ -122,7 +121,7 @@ public class Loan {
 				}
 
 				if (this.item == null) {
-					flash = "No se encontró el material.";
+					app.flash = "No se encontró el material.";
 				} else {
 					System.out.print("¿Desea indicar la fecha de prestamo? (S/N): ");
 					dateAnswer = scanner.nextLine();
@@ -133,7 +132,7 @@ public class Loan {
 							this.lendDate = LocalDate.parse(dateAnswer,
 									DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 						} catch (Exception e) {
-							flash = "La fecha ingresada no es válida.";
+							app.flash = "error: La fecha ingresada no es válida.";
 						}
 					} else {
 						this.lendDate = LocalDate.now();
@@ -151,7 +150,7 @@ public class Loan {
 								this.returnDate = LocalDate.parse(dateAnswer,
 										DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 							} catch (Exception e) {
-								flash = "La fecha ingresada no es válida.";
+								app.flash = "error: La fecha ingresada no es válida.";
 							}
 						} else {
 							this.returnDate = null;

@@ -26,6 +26,8 @@ public class App {
 	 */
 	ArrayList<Loan> loans;
 
+	ArrayList<String> categories;
+
 	/*
 	 * Para mostrar información encima de los menús. Sirve para errores, avisos e
 	 * información obtenida.
@@ -33,6 +35,11 @@ public class App {
 	String flash;
 
 	public App() {
+		categories = new ArrayList<>();
+		categories.add("limpieza");
+		categories.add("laboratorio");
+		categories.add("computo");
+
 		users = new ArrayList<>();
 		scanner = new Scanner(System.in, "UTF-8");
 		items = new ArrayList<>();
@@ -128,11 +135,9 @@ public class App {
 						clearScreen();
 
 						newLoan = new Loan();
-						newLoan.scanAttributes(scanner, items, users, this.flash);
+						newLoan.scanAttributes(scanner, items, users, this);
 
-						if (newLoan.getItem() == null) {
-							this.flash = "error: Hubo un error mientras se registraba el préstamo.";
-						} else {
+						if (newLoan.getItem() != null) {
 							if (newLoan.getItem().getQuantity() > 0) {
 								newLoan.getItem().setQuantity(newLoan.getItem().getQuantity() - 1);
 							}
@@ -156,7 +161,7 @@ public class App {
 					default -> this.flash = "error: Opción inválida.";
 				}
 			} catch (NumberFormatException exception) {
-				this.flash = "error: Ingrese una opción del menú.";
+				this.flash = "error: Ingrese una opción válida.";
 			}
 		} while (opt != 4);
 	}
@@ -245,7 +250,7 @@ public class App {
 								System.out.println(i + ". " + loans.get(i).getItem().getName());
 							}
 
-							System.out.print("Indique el préstamo del que quiere ver información: ");
+							System.out.print("Indique el material del que quiere ver información de préstamo: ");
 							try {
 								optUser = Integer.parseInt(scanner.nextLine());
 
@@ -351,12 +356,15 @@ public class App {
 					%s
 					+--------Modificar---------+
 					| 1. Modificar Usuario...  |
+					| 2. Eliminar Usuario...   |
 					+--------------------------+
-					| 2. Modificar Préstamo... |
+					| 3. Modificar Préstamo... |
+					| 4. Eliminar Préstamo...  |
 					+--------------------------+
-					| 3. Modificar Material... |
+					| 5. Modificar Material... |
+					| 6. Eliminar Material...  |
 					+--------------------------+
-					| 4. Volver...             |
+					| 7. Volver...             |
 					+--------------------------+%n""", flash);
 
 			System.out.print("Ingrese una opción: ");
@@ -369,7 +377,7 @@ public class App {
 						clearScreen();
 
 						for (int i = 0; i < users.size(); i++) {
-							System.out.println(i + ". " + users.get(i).getName() + " - " + users.get(i).getId());
+							System.out.println("+ " + users.get(i).getName() + " - " + users.get(i).getId());
 						}
 
 						System.out.print("Ingrese el nombre o código del usuario: ");
@@ -396,24 +404,24 @@ public class App {
 					case 2 -> {
 						clearScreen();
 
-						for (int i = 0; i < loans.size(); i++) {
-							System.out.println(i + ". " + loans.get(i).getItem().getName());
+						for (int i = 0; i < users.size(); i++) {
+							System.out.println("+ " + users.get(i).getName() + " - " + users.get(i).getId());
 						}
 
-						System.out.print("Ingrese el nombre o código del material: ");
+						System.out.print("Ingrese el nombre o código del usuario: ");
 						try {
 							optQuery = scanner.nextLine().toLowerCase();
 
 							if (Objects.equals(optQuery, "")) {
 								this.flash = "error: Necesita ingresar un valor para realizar la búsqueda.";
 							} else {
-								loanResult = searchLoan(optQuery);
+								userResult = searchUser(optQuery);
 
-								if (loanResult != null) {
-									loanResult.scanAttributes(scanner, items, users, this.flash);
-									this.flash = "aviso: Préstamo modificado con éxito.";
+								if (userResult != null) {
+									users.remove(userResult);
+									this.flash = "aviso: Usuario eliminado con éxito.";
 								} else {
-									this.flash = "error: Préstamo no encontrado.";
+									this.flash = "error: Usuario no encontrado.";
 								}
 							}
 						} catch (Exception exception) {
@@ -424,8 +432,64 @@ public class App {
 					case 3 -> {
 						clearScreen();
 
+						for (int i = 0; i < loans.size(); i++) {
+							System.out.println(
+									"+ " + loans.get(i).getItem().getName() + " - " + loans.get(i).getItem().getId());
+						}
+
+						System.out.print("Ingrese el nombre o código del material: ");
+						try {
+							optQuery = scanner.nextLine().toLowerCase();
+
+							if (Objects.equals(optQuery, "")) {
+								this.flash = "error: Necesita ingresar un valor para realizar la búsqueda.";
+							} else {
+								loanResult = searchLoan(optQuery);
+								if (loanResult != null) {
+									loanResult.scanAttributes(scanner, items, users, this);
+									this.flash = "aviso: Préstamo modificado con éxito.";
+								} else {
+									this.flash = "error: Préstamo no encontrado.";
+								}
+							}
+						} catch (Exception exception) {
+							this.flash = "error: Ingrese un valor válido.";
+						}
+					}
+
+					case 4 -> {
+						clearScreen();
+
+						for (int i = 0; i < loans.size(); i++) {
+							System.out.println(
+									"+ " + loans.get(i).getItem().getName() + " - " + loans.get(i).getItem().getId());
+						}
+
+						System.out.print("Ingrese el nombre o código del material: ");
+						try {
+							optQuery = scanner.nextLine().toLowerCase();
+
+							if (Objects.equals(optQuery, "")) {
+								this.flash = "error: Necesita ingresar un valor para realizar la búsqueda.";
+							} else {
+								loanResult = searchLoan(optQuery);
+								if (loanResult != null) {
+									loans.remove(loanResult);
+									this.flash = "aviso: Préstamo eliminado con éxito.";
+								} else {
+									this.flash = "error: Préstamo no encontrado.";
+								}
+							}
+						} catch (Exception exception) {
+							this.flash = "error: Ingrese un valor válido.";
+						}
+					}
+
+					case 5 -> {
+						clearScreen();
+
 						for (int i = 0; i < items.size(); i++) {
-							System.out.println(i + ". " + items.get(i).getName());
+							System.out.println("+ " + items.get(i).getName() + " - " + items.get(i).getId());
 						}
 
 						System.out.print("Ingrese el nombre o código del material: ");
@@ -449,13 +513,41 @@ public class App {
 						}
 					}
 
-					case 4 -> this.flash = "";
+					case 6 -> {
+						clearScreen();
+
+						for (int i = 0; i < items.size(); i++) {
+							System.out.println("+ " + items.get(i).getName() + " - " + items.get(i).getId());
+						}
+
+						System.out.print("Ingrese el nombre o código del material: ");
+						try {
+							optQuery = scanner.nextLine().toLowerCase();
+
+							if (Objects.equals(optQuery, "")) {
+								this.flash = "error: Necesita ingresar un valor para realizar la búsqueda.";
+							} else {
+								itemResult = searchItem(optQuery);
+
+								if (itemResult != null) {
+									items.remove(itemResult);
+									this.flash = "aviso: Material eliminado con éxito.";
+								} else {
+									this.flash = "error: Material no encontrado.";
+								}
+							}
+						} catch (Exception exception) {
+							this.flash = "error: Ingrese un valor válido.";
+						}
+					}
+
+					case 7 -> this.flash = "";
 					default -> this.flash = "error: Opción incorrecta";
 				}
 			} catch (NumberFormatException exception) {
 				this.flash = "error: Ingrese un número.";
 			}
-		} while (opt != 4);
+		} while (opt != 7);
 	}
 
 	public static void main(String[] args) {
